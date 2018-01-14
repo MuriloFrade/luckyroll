@@ -1,0 +1,26 @@
+{
+  "name": "luckyroll",
+  "version": "1.0.0",
+  "description": "A bowling game for lucky people. No skills required.",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MuriloFrade/luckyroll.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MuriloFrade/luckyroll/issues"
+  },
+  "homepage": "https://github.com/MuriloFrade/luckyroll#readme",
+  "devDependencies": {
+    "live-server": "^1.2.0"
+  },
+  "dependencies": {
+    "angular": "^1.6.8"
+  }
+}
