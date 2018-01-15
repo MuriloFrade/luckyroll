@@ -8,8 +8,6 @@
     const vm = this
 
     vm.hello = 'Hello'
-
-    const game = new Bowling()
-    game.onUpdate(console.log)
+    const game = new window.Bowling()
   }
 })()
