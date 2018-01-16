@@ -6,13 +6,28 @@ const Bowling = require('../src/game').Bowling
 const Frame = require('../src/game').Frame
 
 describe('Bowling single player', () => {
-  let callbackSpy
+  let framesChangedSpy
+  let endGameSpy
   let game
+
+  const testCases = [
+    {
+      rolls: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
+      total: 300
+    },
+    {
+      rolls: [5, 5, 8, 2, 3, 4, 7, 0, 10, 10, 9, 1, 2, 3 , 4, 4, 9, 1, 6 ],
+      total: 135
+    }
+  ]
 
   beforeEach(() => {
     game = new Bowling()
     game.startGame()
-    callbackSpy = spy()
+    framesChangedSpy = spy()
+    endGameSpy = spy()
+    game.onFramesChanged(framesChangedSpy)
+    game.onEndingGame(endGameSpy)
   })
 
   it('can roll', () => {
@@ -20,17 +35,6 @@ describe('Bowling single player', () => {
   })
 
   it('can calc scores', () => {
-    const testCases = [
-      {
-        rolls: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
-        total: 300
-      },
-      {
-        rolls: [5, 5, 8, 2, 3, 4, 7, 0, 10, 10, 9, 1, 2, 3 , 4, 4, 9, 1, 6 ],
-        total: 135
-      }
-    ]
-
     testCases.forEach(t => {
       game.startGame()
       t.rolls.forEach(r => game.roll(r))
@@ -81,7 +85,7 @@ describe('Bowling single player', () => {
     expect(frames[9]).to.deep.equal(new Frame(4, 6, 8, 139))
   })
 
-  it.only('counts remaining pins', () => {
+  it('counts remaining pins', () => {
     game.roll(5)
     expect(game.countRemainingPins()).to.equal(5)
 
@@ -92,4 +96,18 @@ describe('Bowling single player', () => {
     expect(game.countRemainingPins()).to.equal(10)
   })
 
+  it('calls callback on frames changed', () => {
+    game.roll(5)
+    const frames = game.getFrames()
+    assert.calledOnce(framesChangedSpy)
+    assert.calledWithExactly(framesChangedSpy, frames)
+  })
+
+  it('calls callback on ending game', () => {
+    testCases.forEach(t => {
+      game.startGame()
+      t.rolls.forEach(r => game.roll(r))
+    })
+    assert.callCount(endGameSpy, testCases.length)
+  })
 })

@@ -13,10 +13,20 @@
     constructor () {
       this.numberOfFrames = 10
       this.numberOfPins = 10
+      this.framesChangedCb = () => {}
+      this.endingGameCb = () => {}
 
       this.remainingPins = 10
       this.currentFrame = 0,
       this.frames = []
+    }
+
+    onFramesChanged (cb) {
+      this.framesChangedCb = cb
+    }
+
+    onEndingGame (cb) {
+      this.endingGameCb = cb
     }
 
     startGame () {
@@ -26,10 +36,14 @@
       for (let i = 0; i < this.numberOfFrames; i++) {
         this.frames.push(new Frame())
       }
+      this.framesChangedCb(this.frames)
     }
 
     roll (fallenPins) {
-      if (this.currentFrame === this.frames.length) {
+      if (
+        this.currentFrame === this.frames.length ||
+        fallenPins > this.countRemainingPins()
+      ) {
         throw Error('invalid roll call')
       }
 
@@ -40,21 +54,26 @@
         }
       } else if (this.frames[this.currentFrame].roll2 === null) {
         this.frames[this.currentFrame].roll2 = fallenPins
-        if (this.currentFrame + 1 !== this.frames.length) {
+        if (!this.isLastFrame()) {
           this.currentFrame++
         }
       } else {
         this.frames[this.currentFrame].roll3 = fallenPins
-        this.currentFrame++
       }
 
+      this.framesChangedCb(this.frames)
       this.updateScore()
+      this.checkEndingGame()
     }
 
     updateScore () {
       let lastScore = 0
       for (let i = 0; i < this.frames.length; i++) {
-        if (this.frames[i].roll1 === null) {
+        if (
+          this.frames[i].roll1 === null ||
+          (this.frames[i].roll1 !== 10 && this.frames[i].roll2 === null) ||
+          (this.frames[i].roll1 === 10 && i + 1 < this.numberOfFrames && this.frames[i + 1].roll1 === null)
+        ) {
           break
         }
 
@@ -103,18 +122,21 @@
           }
         }
 
-        this.frames[i].total = lastScore
+        if (this.frames[i].total !== lastScore) {
+          this.frames[i].total = lastScore
+          this.framesChangedCb(this.frames)
+        }
       }
     }
 
     getFrames () {
-      return this.frames
+      return this.frames.map(f => Object.assign({}, f))
     }
 
     countRemainingPins () {
-      // last frame
-      if (this.currentFrame === this.numberOfFrames) {
-        const index = this.currentFrame - 1
+
+      if (this.isLastFrame()) {
+        const index = this.currentFrame
         if (this.frames[index].roll1 === null) {
           return this.numberOfPins
         }
@@ -138,6 +160,24 @@
       }
 
       return this.numberOfPins - this.frames[this.currentFrame].roll1
+    }
+
+    checkEndingGame () {
+      if (this.isLastFrame()) {
+        if (
+          (this.frames[this.currentFrame].roll1 !== null && this.frames[this.currentFrame].roll2 !== null) &&
+          (
+            (this.frames[this.currentFrame].roll1 + this.frames[this.currentFrame].roll2) < 10 ||
+            this.frames[this.currentFrame].roll3 !== null
+          )
+        ) {
+          this.endingGameCb()
+        }
+      }
+    }
+
+    isLastFrame () {
+      return this.currentFrame + 1 === this.numberOfFrames
     }
 
   }

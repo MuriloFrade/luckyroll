@@ -11,8 +11,115 @@
 <body ng-app="app" ng-controller="MainCtrl as vm">
   <header>
     <h1 class="text-center">Lucky Roll</h1>
-    <p>{{vm.hello}}</p>
   </header>
+
+  <div class="container-fluid content">
+
+    <div ng-if="vm.showInitial" class="initial-screen mx-auto">
+      <h2 class="text-center">New game</h2>
+      <form class="form-initial">
+        <input ng-model="vm.player" type="text" id="name" class="form-control" placeholder="Enter your name" required="" autofocus="">
+        <br />
+        <button ng-click="vm.start()" class="btn btn-lg btn-primary btn-block" type="button">START</button>
+      </form>
+    </div>
+
+    <div ng-if="vm.showPlaying" class="playing-screen">
+        <div class="row" >
+          <div class="col-md-6 score">
+            <div class="row">
+              <div class="col-md-12">
+                <h3>{{vm.player}}</h3>
+                <table class="table table-sm table-bordered">
+                  <thead class="thead-light">
+                    <tr>
+                      <th ng-repeat="i in [1,2,3,4,5,6,7,8,9,10]" scope="col">{{i}}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td ng-repeat="frame in vm.frames">
+                        <table class="table table-bordered">
+                          <th >{{frame.roll1}}</td>
+                          <th>{{frame.roll2}}</td>
+                          <th ng-if="$index + 1 === vm.frames.length">{{frame.roll3}}</th>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td ng-repeat="frame in vm.frames">
+                        {{frame.total}}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="col-md-12" ng-if="vm.showEndingGame">
+                <br>
+                <br>
+                <h3>Congratulations!</h3>
+                <p>The game has finished and your total score is {{vm.totalScore}}</p>
+                <button class="btn btn-primary" ng-click="vm.start()">Play again</button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-md-3">
+            <div class="board-wrap">
+              <div class="board">
+                <div class="pins">
+                  <div class="row mx-auto">
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[9]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[8]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[7]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[6]" class="pin"></span></div>
+                  </div>
+                  <div class="row mx-auto pin-row-2">
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[5]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[4]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[3]" class="pin"></span></div>
+                  </div>
+                  <div class="row mx-auto">
+                    <div class="col-sm-3 offset-sm-3"><span ng-show="vm.pinsVisible[2]" class="pin"></span></div>
+                    <div class="col-sm-3"><span ng-show="vm.pinsVisible[1]" class="pin"></span></div>
+                  </div>
+                  <div class="row mx-auto">
+                    <div class="col-sm-12"><span ng-show="vm.pinsVisible[0]" class="pin"></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="ball">
+                <img src="src/ball.png" alt="">
+              </div>
+
+              <div class="roll">
+                <button ng-disabled="vm.rollDisabled" ng-click="vm.roll()" class="btn btn-primary">Roll !</button>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="col-md-3">
+            <div class="row">
+              <div class="col-md-12">
+                <h3>Stats</h3>
+                <p>Last roll: {{vm.fallenPins}}</p>
+                <p>Remaining pins: {{vm.remainingPins}}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
   <script src="node_modules/angular/angular.js"></script>
   <script src="src/game.js"></script>
   <script src="src/app.js"></script>
