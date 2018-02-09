@@ -2,6 +2,8 @@
 
 Lucky Roll is a bowling game where your score depends on your luck which means on each roll you will knock down a random number of pins.   
 
+![screenshot](https://raw.githubusercontent.com/MuriloFrade/luckyroll/master/screenshot.PNG)
+
 ## Setup
 
 - Clone this repo
